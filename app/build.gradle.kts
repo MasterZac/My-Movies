@@ -40,6 +40,14 @@ android {
 
 dependencies {
 
+    //Dependencia para las corrutinas
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+
+    //Retrofit para consumir api de las peliculas
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    implementation(libs.github.glide)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
