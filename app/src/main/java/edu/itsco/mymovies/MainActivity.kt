@@ -1,5 +1,6 @@
 package edu.itsco.mymovies
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
@@ -10,7 +11,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import edu.itsco.mymovies.databinding.ActivityMainBinding
+import edu.itsco.mymovies.model.Movie
 import edu.itsco.mymovies.model.MovieDbClient
+import edu.itsco.mymovies.model.MovieDbResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -25,24 +28,19 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.title = "My Movies"
 
-        val moviesAdapter = MoviesAdapter(emptyList()) {
-            Toast
-                .makeText(this, it.title, Toast.LENGTH_SHORT)
-                .show()
-        }
+        val moviesAdapter = MoviesAdapter(emptyList()) { navigateTo(it) }
         binding.recycler.adapter = moviesAdapter
 
         lifecycleScope.launch {
             val apiKey = getString(R.string.api_key)
             val popularMovies = MovieDbClient.service.listPopularMovies(apiKey)
-            val body = withContext(Dispatchers.IO) {popularMovies.execute().body()}
-            if (body != null)
-                moviesAdapter.movies = body.results
-                moviesAdapter.notifyDataSetChanged()
+            moviesAdapter.movies = popularMovies.results
+            moviesAdapter.notifyDataSetChanged()
         }
     }
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("MainActivity", "onDestroy")
+
+    private fun navigateTo(movie: Movie) {
+        val intent = Intent(this, DetailActivity::class.java)
+        startActivity(intent)
     }
 }
